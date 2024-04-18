@@ -28,8 +28,8 @@ export const RadialFab = forwardRef<
 });
 
 export const RadialFabButton = forwardRef<
-  ElementRef<typeof m.button>,
-  ComponentPropsWithoutRef<typeof m.button> &
+  ElementRef<"button">,
+  ComponentPropsWithoutRef<"button"> &
     (
       | { variant?: "main" }
       | { variant?: "sub"; open?: boolean; angle: number; radius: string }
@@ -41,18 +41,19 @@ export const RadialFabButton = forwardRef<
     typeof props & { variant: "sub" }
   >;
 
-  const position = useSpring(variant === "main" || !open ? 0 : 1);
-
   return (
-    <m.button
+    <button
       {...rest}
       className={cn(
-        "rounded-full aspect-square bg-primary text-primary-foreground flex flex-row items-center justify-center",
-        variant === "main" && "w-20 text-4xl",
+        "rounded-full aspect-square bg-primary text-primary-foreground flex flex-row items-center justify-center transition-transform active:scale-90",
+        variant === "main" && "w-20 text-4xl z-10",
         variant === "sub" && "absolute  w-[60px] text-2xl",
         className
       )}
       style={{
+        transform: `rotate(${angle}deg) translateY(${
+          open ? radius : 0
+        }) rotate(${-(angle || 0)}deg)`,
         ...style,
       }}
     />
