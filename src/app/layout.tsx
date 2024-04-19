@@ -1,6 +1,7 @@
+import "./globals.css";
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RemoteProvider } from "@/remote.store";
 import { LocalProvider } from "@/local.store";
@@ -8,7 +9,7 @@ import { LocalProvider } from "@/local.store";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Baby Blue",
+  title: "UltraViolet",
   description: "",
   manifest: "/site.webmanifest",
   icons: {
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ({
+export default async function ({
   children,
 }: Readonly<{
   children: React.ReactNode;

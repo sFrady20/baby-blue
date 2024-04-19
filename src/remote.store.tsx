@@ -1,46 +1,42 @@
 "use client";
 
-import { ReactNode, createContext, useContext, useMemo } from "react";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
+import { StoreApi, UseBoundStore, create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { readRemoteState } from "./actions/read-remote-state";
-import { updateRemoteState } from "./actions/update-remote-state";
-import { destroyRemoteState } from "./actions/destroy-remote-state";
+import { liveblocks, WithLiveblocks } from "@liveblocks/zustand";
+import { liveblocks as liveblocksClient } from "@/services/liveblocks";
 
 export type RemoteState = {
-  isLoading?: boolean;
-  isBabySleeping?: boolean;
+  isSleeping: boolean;
+};
+type RemoteFns = {};
+
+type LiveblocksState = {
+  liveblocks: WithLiveblocks<RemoteState & RemoteFns>["liveblocks"];
 };
 
-function makeStore(hash: string = "default") {
+const typeCreator = create(
+  immer<RemoteState & RemoteFns & LiveblocksState>(() => ({} as any))
+);
+
+function makeStore(hash: string = "default"): typeof typeCreator {
   return create(
-    immer(
-      persist<RemoteState>(
-        (set, get) => ({
-          isLoading: true,
-        }),
-        {
-          name: `bb-${hash}`,
-          storage: {
-            getItem: async (name) => ({
-              state: {
-                ...(await readRemoteState(name)),
-                isLoading: false,
-              } as RemoteState,
-            }),
-            setItem: async (name, { state }) => {
-              delete state.isLoading;
-              await updateRemoteState(name, state);
-            },
-            removeItem: async (name) => {
-              await destroyRemoteState(name);
-            },
-          },
-        }
-      )
+    liveblocks(
+      immer<RemoteState & RemoteFns>((set, get) => ({
+        isSleeping: false,
+      })),
+      {
+        client: liveblocksClient,
+        storageMapping: { isSleeping: true },
+      }
     )
-  );
+  ) as any;
 }
 
 const StoreContext = createContext<ReturnType<typeof makeStore>>({} as any);
@@ -50,9 +46,23 @@ export const RemoteProvider = (props: {
   children?: ReactNode;
 }) => {
   const { children, hash } = props;
-  const state = useMemo(() => makeStore(hash), [hash]);
+
+  const store = useMemo(() => makeStore(hash), [hash]);
+
+  const [enterRoom, leaveRoom] = store((x) => [
+    x.liveblocks.enterRoom,
+    x.liveblocks.leaveRoom,
+  ]);
+
+  useEffect(() => {
+    enterRoom("bbuv");
+    return () => {
+      leaveRoom();
+    };
+  }, [enterRoom, leaveRoom]);
+
   return (
-    <StoreContext.Provider value={state}>{children}</StoreContext.Provider>
+    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
   );
 };
 

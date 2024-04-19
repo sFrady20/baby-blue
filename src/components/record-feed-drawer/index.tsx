@@ -38,6 +38,9 @@ export default function RecordFeedDrawer(props: {}) {
           <DrawerTitle>Record Feeding</DrawerTitle>
         </DrawerHeader>
         <div className="px-[2rem] py-6">
+          <div className="text-center font-medium text-sm pb-2">
+            {amount[0].toLocaleString("en-US", { maximumFractionDigits: 1 })} oz
+          </div>
           <Slider
             max={10}
             min={0}
@@ -50,9 +53,6 @@ export default function RecordFeedDrawer(props: {}) {
               <SliderRange className="absolute bg-primary h-full" />
             </SliderTrack>
           </Slider>
-          <div className="text-center font-medium text-sm pt-2">
-            {amount[0].toLocaleString("en-US", { maximumFractionDigits: 1 })} oz
-          </div>
         </div>
         <DrawerFooter className="flex flex-row items-center gap-6">
           <Button

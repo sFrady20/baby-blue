@@ -8,10 +8,11 @@ import {
 import RecordFeedDrawer, {
   FEED_DRAWER_KEY,
 } from "@/components/record-feed-drawer";
+import { Button } from "@/components/ui/button";
 import { useLocal } from "@/local.store";
 import { useRemote } from "@/remote.store";
 import { cn } from "@/utils/cn";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 const ADD_MENU_KEY = "addMenu";
 
@@ -19,8 +20,9 @@ export default function (props: { children: ReactNode }) {
   const { children } = props;
 
   const remote = useRemote();
-  const isLoading = remote((x) => x.isLoading);
-  const isBabySleeping = remote((x) => x.isBabySleeping);
+  const isLoading = remote((x) => x.liveblocks.isStorageLoading);
+  const roomStatus = remote((x) => x.liveblocks.status);
+  const isBabySleeping = remote((x) => x.isSleeping);
 
   const local = useLocal();
   const isAddMenuOpen = local((x) => x.isOpen[ADD_MENU_KEY]);
@@ -29,12 +31,28 @@ export default function (props: { children: ReactNode }) {
     <>
       <header>
         {isBabySleeping ? (
-          <div className="fixed top-0 left-0 w-full p-4 bg-secondary text-center text-sm font-medium border-b">
-            Sshhhh... baby is sleeping.
+          <div className="fixed top-0 left-0 w-full p-4 bg-secondary border-b flex flex-row items-center justify-center gap-4">
+            <div className="text-center text-sm font-medium">
+              Sshhhh... baby is sleeping.
+            </div>
+            <Button
+              variant={"outline"}
+              size={"sm"}
+              onClick={() => {
+                remote.setState((x) => {
+                  x.isSleeping = !x.isSleeping;
+                });
+              }}
+            >
+              Mark as awake
+            </Button>
           </div>
         ) : null}
       </header>
-      <main className="flex-1 flex flex-col">{children}</main>
+      <main className="flex-1 flex flex-col items-center justify-center">
+        {children}
+        <div>{roomStatus}</div>
+      </main>
       <footer>
         <div className="flex flex-col items-center justify-center py-[60px]">
           <RadialFab>
@@ -98,7 +116,7 @@ export default function (props: { children: ReactNode }) {
                   x.isOpen[ADD_MENU_KEY] = false;
                 });
                 remote.setState((x) => {
-                  x.isBabySleeping = !isBabySleeping;
+                  x.isSleeping = !x.isSleeping;
                 });
               }}
             >
