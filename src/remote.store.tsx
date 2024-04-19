@@ -7,7 +7,7 @@ import {
   useEffect,
   useMemo,
 } from "react";
-import { StoreApi, UseBoundStore, create } from "zustand";
+import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { liveblocks, WithLiveblocks } from "@liveblocks/zustand";
 import { liveblocks as liveblocksClient } from "@/services/liveblocks";
