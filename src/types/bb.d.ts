@@ -1,4 +1,4 @@
-declare type ActivityEvent =
+declare type ActivityEvent = { timestamp: string } & (
   | {
       type: "feed";
       amount: number;
@@ -12,6 +12,7 @@ declare type ActivityEvent =
   | {
       type: "cry";
     }
-  | { type: "sleep" };
+  | { type: "sleep" }
+);
 
-declare type Activity = { [time: string]: ActivityEvent };
+declare type Activity = ActivityEvent[];

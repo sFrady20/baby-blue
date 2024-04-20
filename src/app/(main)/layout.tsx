@@ -49,12 +49,13 @@ export default function (props: { children: ReactNode }) {
           </div>
         ) : null}
       </header>
+
       <main className="flex-1 flex flex-col items-center justify-center">
         {children}
-        <div>{roomStatus}</div>
       </main>
+
       <footer>
-        <div className="flex flex-col items-center justify-center py-[60px]">
+        <div className="fixed bottom-0 w-full flex flex-col items-center justify-center py-[60px]">
           <RadialFab>
             <RadialFabButton
               onClick={() => {
@@ -64,7 +65,8 @@ export default function (props: { children: ReactNode }) {
                 });
               }}
             >
-              {isLoading ? (
+              {isLoading ||
+              ["reconnecting", "connecting"].includes(roomStatus) ? (
                 <RadialFabIcon
                   className={cn("icon-[svg-spinners--8-dots-rotate]")}
                 />

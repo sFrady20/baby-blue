@@ -14,6 +14,7 @@ import { liveblocks as liveblocksClient } from "@/services/liveblocks";
 
 export type RemoteState = {
   isSleeping: boolean;
+  activity: Activity;
 };
 type RemoteFns = {};
 
@@ -30,10 +31,11 @@ function makeStore(hash: string = "default"): typeof typeCreator {
     liveblocks(
       immer<RemoteState & RemoteFns>((set, get) => ({
         isSleeping: false,
+        activity: [],
       })),
       {
         client: liveblocksClient,
-        storageMapping: { isSleeping: true },
+        storageMapping: { isSleeping: true, activity: true },
       }
     )
   ) as any;

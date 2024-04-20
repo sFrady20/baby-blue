@@ -11,6 +11,7 @@ import {
 import { useLocal } from "@/local.store";
 import { useRemote } from "@/remote.store";
 import { Slider, SliderRange, SliderTrack } from "@radix-ui/react-slider";
+import { DateTime } from "luxon";
 import { ReactNode, useEffect, useState } from "react";
 
 export const FEED_DRAWER_KEY = "feedDrawer";
@@ -72,6 +73,13 @@ export default function RecordFeedDrawer(props: {}) {
               //record activity
               local.setState((x) => {
                 x.isOpen[FEED_DRAWER_KEY] = false;
+              });
+              remote.setState((x) => {
+                x.activity.unshift({
+                  type: "feed",
+                  amount: amount[0],
+                  timestamp: DateTime.now().toISO(),
+                });
               });
             }}
           >
