@@ -13,7 +13,7 @@ const font = Montserrat_Alternates({
 });
 
 export const metadata: Metadata = {
-  title: "Baby Blue",
+  title: "Bloom",
   description: "",
   manifest: "/site.webmanifest",
   icons: {
