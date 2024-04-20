@@ -12,7 +12,7 @@ declare type ActivityEvent = { timestamp: string } & (
   | {
       type: "cry";
     }
-  | { type: "sleep" }
+  | { type: "sleep"; hours: number }
 );
 
 declare type Activity = ActivityEvent[];

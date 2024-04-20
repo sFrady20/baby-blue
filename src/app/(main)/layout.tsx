@@ -1,5 +1,8 @@
 "use client";
 
+import DiaperCheckDrawer, {
+  DIAPER_CHECK_DRAWER_KEY,
+} from "@/components/diaper-check-drawer";
 import {
   RadialFab,
   RadialFabButton,
@@ -12,7 +15,8 @@ import { Button } from "@/components/ui/button";
 import { useLocal } from "@/local.store";
 import { useRemote } from "@/remote.store";
 import { cn } from "@/utils/cn";
-import { ReactNode, useEffect } from "react";
+import { DateTime } from "luxon";
+import { ReactNode } from "react";
 
 const ADD_MENU_KEY = "addMenu";
 
@@ -22,7 +26,7 @@ export default function (props: { children: ReactNode }) {
   const remote = useRemote();
   const isLoading = remote((x) => x.liveblocks.isStorageLoading);
   const roomStatus = remote((x) => x.liveblocks.status);
-  const isBabySleeping = remote((x) => x.isSleeping);
+  const isBabySleeping = remote((x) => x.sleep.startedAt !== null);
 
   const local = useLocal();
   const isAddMenuOpen = local((x) => x.isOpen[ADD_MENU_KEY]);
@@ -31,30 +35,19 @@ export default function (props: { children: ReactNode }) {
     <>
       <header>
         {isBabySleeping ? (
-          <div className="fixed top-0 left-0 w-full p-4 bg-secondary border-b flex flex-row items-center justify-center gap-4">
+          <div className="fixed top-0 left-0 w-full p-4 bg-secondary border-b flex flex-row items-center justify-center gap-4 z-[40]">
             <div className="text-center text-sm font-medium">
               Sshhhh... baby is sleeping.
             </div>
-            <Button
-              variant={"outline"}
-              size={"sm"}
-              onClick={() => {
-                remote.setState((x) => {
-                  x.isSleeping = !x.isSleeping;
-                });
-              }}
-            >
-              Mark as awake
-            </Button>
           </div>
         ) : null}
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center">
-        {children}
-      </main>
+      {children}
 
       <footer>
+        <div className="fixed bottom-0 w-full left-0 h-[200px] bg-gradient-to-t from-background via-background to-[transparent]" />
+
         <div className="fixed bottom-0 w-full flex flex-col items-center justify-center py-[60px]">
           <RadialFab>
             <RadialFabButton
@@ -87,6 +80,7 @@ export default function (props: { children: ReactNode }) {
               onClick={() => {
                 local.setState((x) => {
                   x.isOpen[ADD_MENU_KEY] = false;
+                  x.isOpen[DIAPER_CHECK_DRAWER_KEY] = true;
                 });
               }}
             >
@@ -118,7 +112,19 @@ export default function (props: { children: ReactNode }) {
                   x.isOpen[ADD_MENU_KEY] = false;
                 });
                 remote.setState((x) => {
-                  x.isSleeping = !x.isSleeping;
+                  if (x.sleep.startedAt === null) {
+                    x.sleep.startedAt = DateTime.now().toISO();
+                  } else {
+                    x.activity.unshift({
+                      type: "sleep",
+                      hours: DateTime.now().diff(
+                        DateTime.fromISO(x.sleep.startedAt),
+                        "hours"
+                      ).hours,
+                      timestamp: DateTime.now().toISO(),
+                    });
+                    x.sleep.startedAt = null;
+                  }
                 });
               }}
             >
@@ -133,6 +139,7 @@ export default function (props: { children: ReactNode }) {
       </footer>
 
       <RecordFeedDrawer />
+      <DiaperCheckDrawer />
     </>
   );
 }

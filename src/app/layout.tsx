@@ -1,15 +1,19 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Montserrat_Alternates } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RemoteProvider } from "@/remote.store";
 import { LocalProvider } from "@/local.store";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = Montserrat_Alternates({
+  subsets: ["latin"],
+  weight: ["200", "400", "500", "600", "700"],
+  variable: "--body",
+});
 
 export const metadata: Metadata = {
-  title: "UltraViolet",
+  title: "Baby Blue",
   description: "",
   manifest: "/site.webmanifest",
   icons: {
@@ -26,7 +30,7 @@ export default async function ({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={font.className}>
         <TooltipProvider>
           <LocalProvider>
             <RemoteProvider>{children}</RemoteProvider>

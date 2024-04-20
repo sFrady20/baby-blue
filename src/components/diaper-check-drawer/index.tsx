@@ -13,47 +13,51 @@ import { useRemote } from "@/remote.store";
 import { Slider, SliderRange, SliderTrack } from "@radix-ui/react-slider";
 import { DateTime } from "luxon";
 import { ReactNode, useEffect, useState } from "react";
+import { Toggle } from "../ui/toggle";
 
-export const FEED_DRAWER_KEY = "feedDrawer";
+export const DIAPER_CHECK_DRAWER_KEY = "diaperCheckDrawer";
 
-export default function RecordFeedDrawer(props: {}) {
+export default function DiaperCheckDrawer(props: {}) {
   const remote = useRemote();
 
   const local = useLocal();
-  const isFeedDrawerOpen = local((x) => x.isOpen[FEED_DRAWER_KEY]);
+  const open = local((x) => x.isOpen[DIAPER_CHECK_DRAWER_KEY]);
 
-  const [amount, setAmount] = useState([5]);
+  const [pee, setPee] = useState(false);
+  const [poo, setPoo] = useState(false);
 
   return (
     <Drawer
-      open={isFeedDrawerOpen}
+      open={open}
       onClose={() => {
-        setAmount([0]);
+        setPee(false);
+        setPoo(false);
         local.setState((x) => {
-          x.isOpen[FEED_DRAWER_KEY] = false;
+          x.isOpen[DIAPER_CHECK_DRAWER_KEY] = false;
         });
       }}
     >
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Record Feeding</DrawerTitle>
+          <DrawerTitle>Record Diaper Check</DrawerTitle>
         </DrawerHeader>
-        <div className="px-[2rem] py-6">
-          <div className="text-center font-medium text-sm pb-2">
-            {amount[0].toLocaleString("en-US", { maximumFractionDigits: 1 })} oz
-          </div>
-          <Slider
-            max={10}
-            min={0}
-            step={0.01}
-            value={amount}
-            onValueChange={setAmount}
-            className="relative flex w-full touch-none select-none items-center"
+        <div className="px-[2rem] py-6 flex flex-row">
+          <Toggle
+            variant={"outline"}
+            className="flex-1 border-r-none rounded-r-none"
+            pressed={pee}
+            onPressedChange={setPee}
           >
-            <SliderTrack className="relative h-10 w-full grow overflow-hidden rounded-full bg-primary/10">
-              <SliderRange className="absolute bg-primary h-full" />
-            </SliderTrack>
-          </Slider>
+            Wet
+          </Toggle>
+          <Toggle
+            variant={"outline"}
+            className="flex-1 rounded-l-none"
+            pressed={poo}
+            onPressedChange={setPoo}
+          >
+            Dirty
+          </Toggle>
         </div>
         <DrawerFooter className="flex flex-row items-center gap-6">
           <Button
@@ -61,7 +65,7 @@ export default function RecordFeedDrawer(props: {}) {
             variant={"secondary"}
             onClick={() => {
               local.setState((x) => {
-                x.isOpen[FEED_DRAWER_KEY] = false;
+                x.isOpen[DIAPER_CHECK_DRAWER_KEY] = false;
               });
             }}
           >
@@ -72,12 +76,13 @@ export default function RecordFeedDrawer(props: {}) {
             onClick={() => {
               //record activity
               local.setState((x) => {
-                x.isOpen[FEED_DRAWER_KEY] = false;
+                x.isOpen[DIAPER_CHECK_DRAWER_KEY] = false;
               });
               remote.setState((x) => {
                 x.activity.unshift({
-                  type: "feed",
-                  amount: amount[0],
+                  type: "check",
+                  pee,
+                  poo,
                   timestamp: DateTime.now().toISO(),
                 });
               });
