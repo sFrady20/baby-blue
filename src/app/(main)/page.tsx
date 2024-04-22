@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { useRemote } from "@/remote.store";
+import { useSecond } from "@/utils/use-second";
 import { DateTime, ToRelativeOptions } from "luxon";
 import { useEffect, useState } from "react";
 
@@ -10,13 +11,8 @@ function useTimeAgo(since: string, options?: ToRelativeOptions) {
     DateTime.fromISO(since).toRelative(options)
   );
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(DateTime.fromISO(since).toRelative(options));
-    }, 1000);
-    return () => {
-      clearInterval(timer);
-    };
+  useSecond(() => {
+    setTime(DateTime.fromISO(since).toRelative(options));
   }, [since]);
 
   return time;
@@ -30,7 +26,7 @@ function ActivityItem(props: { activity: ActivityEvent }) {
   switch (activity.type) {
     case "feed":
       return (
-        <div className="flex flex-col p-4 border rounded-lg shadow-md bg-background w-full -scale-100">
+        <div className="flex flex-col p-4 border-b shadow-md bg-green text-green-foreground w-full -scale-100">
           <div className="font-medium capitalize">{`Fed ${activity.amount.toLocaleString(
             "en-US",
             {
@@ -42,7 +38,7 @@ function ActivityItem(props: { activity: ActivityEvent }) {
       );
     case "sleep":
       return (
-        <div className="flex flex-col p-4 border rounded-lg shadow-md bg-background w-full -scale-100">
+        <div className="flex flex-col p-4 border-b shadow-md bg-purple text-purple-foreground w-full -scale-100">
           <div className="font-medium capitalize">
             {`Slept for ${activity.hours.toLocaleString("en-US", {
               maximumFractionDigits: 2,
@@ -53,7 +49,7 @@ function ActivityItem(props: { activity: ActivityEvent }) {
       );
     case "check":
       return (
-        <div className="flex flex-col p-4 border rounded-lg shadow-md bg-background w-full -scale-100 gap-2">
+        <div className="flex flex-col p-4 border-b shadow-md bg-pink text-pink-foreground w-full -scale-100 gap-2">
           <div className="font-medium capitalize">{`Diaper checked`}</div>
           <div className="flex flex-row items-center gap-2">
             {activity.pee && <Badge variant={"secondary"}>Wet</Badge>}
@@ -71,12 +67,14 @@ export default function () {
 
   return (
     <div
-      className="container h-screen overflow-y-auto -scale-100 flex flex-col gap-2 pb-[2rem] pt-[200px]"
+      className="container h-screen overflow-y-auto -scale-100 pb-[150px] pt-[200px]"
       style={{ scrollbarColor: "tranparent", scrollbarWidth: "none" }}
     >
-      {activity.map((x, i) => (
-        <ActivityItem activity={x} key={i} />
-      ))}
+      <div className="flex flex-col border rounded-lg overflow-hidden">
+        {activity.map((x, i) => (
+          <ActivityItem activity={x} key={i} />
+        ))}
+      </div>
     </div>
   );
 }

@@ -13,6 +13,10 @@ import { liveblocks, WithLiveblocks } from "@liveblocks/zustand";
 import { liveblocks as liveblocksClient } from "@/services/liveblocks";
 
 export type RemoteState = {
+  settings: {
+    optimalMilk: number; //per 24 hours
+    optimalSleep: number; //per 24hours
+  };
   sleep: {
     startedAt: string | null;
   };
@@ -32,6 +36,10 @@ function makeStore(hash: string = "default"): typeof typeCreator {
   return create(
     liveblocks(
       immer<RemoteState & RemoteFns>((set, get) => ({
+        settings: {
+          optimalMilk: 32, //per 24 hours
+          optimalSleep: 16, //per 24hours
+        },
         sleep: {
           startedAt: null,
         },

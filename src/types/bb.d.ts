@@ -2,6 +2,7 @@ declare type ActivityEvent = { timestamp: string } & (
   | {
       type: "feed";
       amount: number;
+      balance: number;
     }
   | {
       type: "check";
@@ -9,10 +10,7 @@ declare type ActivityEvent = { timestamp: string } & (
       poo?: boolean;
       replaced?: boolean;
     }
-  | {
-      type: "cry";
-    }
-  | { type: "sleep"; hours: number }
+  | { type: "sleep"; hours: number; balance: number }
 );
 
 declare type Activity = ActivityEvent[];

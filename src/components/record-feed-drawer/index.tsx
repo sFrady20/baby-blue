@@ -75,10 +75,28 @@ export default function RecordFeedDrawer(props: {}) {
                 x.isOpen[FEED_DRAWER_KEY] = false;
               });
               remote.setState((x) => {
+                const now = DateTime.now();
+
+                const mostRecentFeed = x.activity.find(
+                  (x) => x.type === "feed"
+                );
+                const mostRecentFeedTime = mostRecentFeed
+                  ? DateTime.fromISO(mostRecentFeed.timestamp)
+                  : now;
+                const mostRecentFeedBalance =
+                  (mostRecentFeed?.type === "feed" && mostRecentFeed.balance) ||
+                  x.settings.optimalMilk;
+
+                const diffDays = now.diff(mostRecentFeedTime, "days").days;
+
                 x.activity.unshift({
                   type: "feed",
                   amount: amount[0],
-                  timestamp: DateTime.now().toISO(),
+                  timestamp: now.toISO(),
+                  balance:
+                    mostRecentFeedBalance -
+                    diffDays * x.settings.optimalMilk +
+                    amount[0],
                 });
               });
             }}

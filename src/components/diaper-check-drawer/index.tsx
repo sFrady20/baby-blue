@@ -10,9 +10,8 @@ import {
 } from "@/components/ui/drawer";
 import { useLocal } from "@/local.store";
 import { useRemote } from "@/remote.store";
-import { Slider, SliderRange, SliderTrack } from "@radix-ui/react-slider";
 import { DateTime } from "luxon";
-import { ReactNode, useEffect, useState } from "react";
+import { useState } from "react";
 import { Toggle } from "../ui/toggle";
 
 export const DIAPER_CHECK_DRAWER_KEY = "diaperCheckDrawer";
