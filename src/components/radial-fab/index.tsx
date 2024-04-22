@@ -45,9 +45,10 @@ export const RadialFabButton = forwardRef<
     <button
       {...rest}
       className={cn(
-        "rounded-full aspect-square bg-primary text-primary-foreground flex flex-row items-center justify-center transition-transform active:scale-90",
+        "rounded-full aspect-square shadow-lg bg-primary text-primary-foreground flex flex-row items-center justify-center transition-transform active:scale-90",
         variant === "main" && "w-20 text-4xl z-10",
-        variant === "sub" && "absolute  w-[60px] text-2xl",
+        variant === "sub" &&
+          "absolute backdrop-blur-lg bg-primary/60 border w-[60px] text-2xl",
         className
       )}
       style={{

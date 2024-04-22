@@ -3,7 +3,6 @@
 import DiaperCheckDrawer, {
   DIAPER_CHECK_DRAWER_KEY,
 } from "@/components/diaper-check-drawer";
-import { MilkBalance } from "@/components/milk-balance";
 import {
   RadialFab,
   RadialFabButton,
@@ -12,7 +11,7 @@ import {
 import RecordFeedDrawer, {
   FEED_DRAWER_KEY,
 } from "@/components/record-feed-drawer";
-import { SleepBalance } from "@/components/sleep-balance";
+import { BalanceGauge } from "@/components/balance-gauge";
 import { useLocal } from "@/local.store";
 import { useRemote } from "@/remote.store";
 import { cn } from "@/utils/cn";
@@ -37,15 +36,20 @@ export default function (props: { children: ReactNode }) {
       <header>
         <div className="fixed top-0 w-full left-0 h-[150px] bg-gradient-to-b from-background via-background to-[transparent] z-[20]" />
 
-        <div className="container py-8 fixed top-0 w-full left-0  flex flex-row items-center justify-evenly z-[30]">
-          <div className="flex flex-col items-center">
-            <div className="text-sm">Milk</div>
-            <MilkBalance />
+        <div className="container py-4 fixed top-0 w-full left-0  flex flex-row items-center justify-evenly z-[30]">
+          <div className="flex flex-col items-center flex-1">
+            <BalanceGauge type="feed" color="var(--green)" className="w-[56px]">
+              <i className="text-primary-foreground icon-[mdi--baby-bottle]" />
+            </BalanceGauge>
           </div>
-          <div></div>
-          <div className="flex flex-col items-center">
-            <div className="text-sm">Sleep</div>
-            <SleepBalance />
+          <div className="flex flex-col items-center flex-1">
+            <BalanceGauge
+              type="sleep"
+              color="var(--purple)"
+              className="w-[56px]"
+            >
+              <i className="text-primary-foreground icon-[mdi--sleep]" />
+            </BalanceGauge>
           </div>
         </div>
       </header>
