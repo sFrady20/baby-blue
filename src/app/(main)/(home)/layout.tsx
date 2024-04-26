@@ -17,6 +17,8 @@ import { useRemote } from "@/remote.store";
 import { cn } from "@/utils/cn";
 import { DateTime } from "luxon";
 import { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const ADD_MENU_KEY = "addMenu";
 
@@ -40,7 +42,7 @@ export default function (props: { children: ReactNode }) {
           <div className="container flex flex-row items-center justify-evenly">
             <div className="flex flex-col items-center flex-1">
               <BalanceGauge
-                type="feed"
+                type="milk"
                 color="var(--green)"
                 className="w-[56px]"
               >
@@ -65,7 +67,9 @@ export default function (props: { children: ReactNode }) {
       <footer>
         <div className="fixed bottom-0 w-full left-0 h-[150px] bg-gradient-to-t from-background via-background to-[transparent]" />
 
-        <div className="fixed bottom-0 w-full flex flex-col items-center justify-center py-[60px]">
+        <div className="fixed bottom-0 w-full flex flex-row items-center justify-center py-[60px] gap-10">
+          <div className="w-10"></div>
+
           <RadialFab>
             <RadialFabButton
               onClick={() => {
@@ -132,20 +136,6 @@ export default function (props: { children: ReactNode }) {
                   if (x.sleep.startedAt === null) {
                     x.sleep.startedAt = DateTime.now().toISO();
                   } else {
-                    const now = DateTime.now();
-
-                    const mostRecent = x.activity.find(
-                      (x) => x.type === "sleep"
-                    );
-                    const mostRecentTime = mostRecent
-                      ? DateTime.fromISO(mostRecent.timestamp)
-                      : now;
-                    const mostRecentBalance =
-                      (mostRecent?.type === "feed" && mostRecent.balance) ||
-                      x.settings.optimalSleep;
-
-                    const diffDays = now.diff(mostRecentTime, "days").days;
-
                     const amount = DateTime.now().diff(
                       DateTime.fromISO(x.sleep.startedAt),
                       "hours"
@@ -154,10 +144,6 @@ export default function (props: { children: ReactNode }) {
                     x.activity.unshift({
                       type: "sleep",
                       hours: amount,
-                      balance:
-                        mostRecentBalance -
-                        diffDays * x.settings.optimalSleep +
-                        amount,
                       timestamp: DateTime.now().toISO(),
                     });
                     x.sleep.startedAt = null;
@@ -172,12 +158,18 @@ export default function (props: { children: ReactNode }) {
               />
             </RadialFabButton>
           </RadialFab>
+
+          <Button variant={"secondary"} size={"icon"} asChild>
+            <Link href={"/settings"}>
+              <i className="icon-[mdi--cog]" />
+            </Link>
+          </Button>
         </div>
 
         {isBabySleeping ? (
           <div className="fixed bottom-0 left-0 w-full p-4 flex flex-row items-center justify-center gap-4 z-[40]">
             <div className="text-center text-sm font-medium font-italic opacity-60">
-              Sshhhh... baby is sleeping.
+              Sshhhh... Violet is sleeping.
             </div>
           </div>
         ) : null}

@@ -15,7 +15,7 @@ import { liveblocks as liveblocksClient } from "@/services/liveblocks";
 export type RemoteState = {
   settings: {
     optimalMilk: number; //per 24 hours
-    optimalSleep: number; //per 24hours
+    optimalSleep: number; //per 24 hours
   };
   sleep: {
     startedAt: string | null;
@@ -29,7 +29,7 @@ type LiveblocksState = {
 };
 
 const typeCreator = create(
-  immer<RemoteState & RemoteFns & LiveblocksState>(() => ({} as any))
+  immer<RemoteState & RemoteFns & LiveblocksState>(() => ({}) as any)
 );
 
 function makeStore(hash: string = "default"): typeof typeCreator {

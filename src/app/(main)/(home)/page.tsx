@@ -24,7 +24,7 @@ function ActivityItem(props: { activity: ActivityEvent }) {
   const time = useTimeAgo(activity.timestamp, { style: "short" });
 
   switch (activity.type) {
-    case "feed":
+    case "milk":
       return (
         <div className="flex flex-col p-4 border-b shadow-md bg-green text-green-foreground w-full -scale-100">
           <div className="font-medium capitalize">{`Fed ${activity.amount.toLocaleString(

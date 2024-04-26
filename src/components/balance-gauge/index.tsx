@@ -18,34 +18,49 @@ export const useBalance = (type: ActivityEvent["type"]) => {
   const optimal = remote((x) =>
     type === "sleep"
       ? x.settings.optimalSleep
-      : type === "feed"
-      ? x.settings.optimalMilk
-      : 10
+      : type === "milk"
+        ? x.settings.optimalMilk
+        : 10
   );
 
-  const [mostRecentTime, mostRecentBalance] = remote((x) => {
-    const mostRecent = x.activity.find((x) => x.type === type);
-    const time = mostRecent
-      ? DateTime.fromISO(mostRecent.timestamp)
-      : DateTime.now();
-    const balance =
-      (mostRecent?.type === type &&
-        (mostRecent as { balance: number }).balance) ||
-      optimal;
-
-    return [time, balance];
-  });
+  const history = remote((x) => x.activity.filter((x) => x.type === type));
 
   const [balance, setBalance] = useState(0);
   const [gauge, setGauge] = useState(0);
 
   useSecond(() => {
     const now = DateTime.now();
-    const diffDays = now.diff(mostRecentTime, "days").days;
-    const balance = mostRecentBalance - diffDays * optimal;
-    setBalance(Math.round(balance));
+
+    const recentEvents = history.filter(
+      (x) =>
+        x.type === type && DateTime.fromISO(x.timestamp).plus({ day: 1 }) > now
+    );
+
+    const balance = Math.round(
+      recentEvents
+        .map((x) => {
+          let balance = 0;
+          switch (x.type) {
+            //@ts-ignore
+            case "feed":
+            case "milk":
+              balance = x.amount;
+              break;
+            case "sleep":
+              balance = x.hours;
+              break;
+          }
+          balance -=
+            now.diff(DateTime.fromISO(x.timestamp), "day").days * optimal;
+          balance = Math.max(0, balance);
+          return balance;
+        })
+        .reduce((a, b) => a + b, 0)
+    );
+
+    setBalance(balance);
     setGauge(Math.min(1, Math.max(-1, balance / optimal - 1)));
-  }, [mostRecentTime, mostRecentBalance, optimal]);
+  }, [history, optimal]);
 
   return [balance, optimal, gauge];
 };
