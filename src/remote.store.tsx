@@ -37,8 +37,8 @@ function makeStore(hash: string = "default"): typeof typeCreator {
     liveblocks(
       immer<RemoteState & RemoteFns>((set, get) => ({
         settings: {
-          optimalMilk: 32, //per 24 hours
-          optimalSleep: 16, //per 24hours
+          optimalMilk: 16,
+          optimalSleep: 8,
         },
         sleep: {
           startedAt: null,
@@ -47,7 +47,7 @@ function makeStore(hash: string = "default"): typeof typeCreator {
       })),
       {
         client: liveblocksClient,
-        storageMapping: { sleep: true, activity: true },
+        storageMapping: { sleep: true, activity: true, settings: true },
       }
     )
   ) as any;
