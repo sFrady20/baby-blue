@@ -7,11 +7,12 @@ import { DateTime } from "luxon";
 import {
   ComponentPropsWithoutRef,
   ElementRef,
-  ReactNode,
   forwardRef,
   useState,
 } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+
+const AVG_UNDIGESTED_MILK_RATIO = 0.18;
 
 export const useBalance = (type: ActivityEvent["type"]) => {
   const remote = useRemote();
@@ -19,8 +20,8 @@ export const useBalance = (type: ActivityEvent["type"]) => {
     type === "sleep"
       ? x.settings.optimalSleep
       : type === "milk"
-        ? x.settings.optimalMilk
-        : 10
+      ? x.settings.optimalMilk
+      : 10
   );
 
   const history = remote((x) => x.activity.filter((x) => x.type === type));
@@ -59,7 +60,12 @@ export const useBalance = (type: ActivityEvent["type"]) => {
     );
 
     setBalance(balance);
-    setGauge(Math.min(1, Math.max(-1, balance / optimal - 1)));
+    setGauge(
+      Math.min(
+        1,
+        Math.max(-1, balance / (optimal * AVG_UNDIGESTED_MILK_RATIO) - 1)
+      )
+    );
   }, [history, optimal]);
 
   return [balance, optimal, gauge];
@@ -150,7 +156,11 @@ export const BalanceGauge = forwardRef<
           </div>
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-auto backdrop-blur-lg bg-primary/20 text-primary-foreground font-medium p-2">{`${balance} / ${optimal}`}</PopoverContent>
+      <PopoverContent className="w-auto backdrop-blur-lg bg-primary/20 text-primary-foreground font-medium p-2">{`${balance} / ${(
+        optimal * AVG_UNDIGESTED_MILK_RATIO
+      ).toLocaleString("en-US", {
+        maximumFractionDigits: 1,
+      })}`}</PopoverContent>
     </Popover>
   );
 });
